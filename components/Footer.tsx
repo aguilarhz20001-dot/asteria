@@ -3,9 +3,11 @@ import { MapPin, MessageCircle } from "lucide-react";
 import Logo from "./Logo";
 import FacebookIcon from "./icons/FacebookIcon";
 import InstagramIcon from "./icons/InstagramIcon";
+import TikTokIcon from "./icons/TikTokIcon";
 import {
   FACEBOOK_URL,
   INSTAGRAM_URL,
+  TIKTOK_URL,
   WHATSAPP_DISPLAY,
   whatsappLink,
   DEFAULT_WHATSAPP_MESSAGE,
@@ -54,6 +56,9 @@ export default function Footer() {
             </a>
             <a href={INSTAGRAM_URL} target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-10 h-10 rounded-full bg-brand-accent-light text-brand-accent-dark flex items-center justify-center hover:bg-brand-accent hover:text-white transition-colors">
               <InstagramIcon className="w-5 h-5" />
+            </a>
+            <a href={TIKTOK_URL} target="_blank" rel="noopener noreferrer" aria-label="TikTok" className="w-10 h-10 rounded-full bg-brand-accent-light text-brand-accent-dark flex items-center justify-center hover:bg-brand-accent hover:text-white transition-colors">
+              <TikTokIcon className="w-5 h-5" />
             </a>
           </div>
         </div>

@@ -5,8 +5,9 @@ import Reveal from "@/components/Reveal";
 import { DoodleHeart, Sparkle, Dashes } from "@/components/Doodles";
 import FacebookIcon from "@/components/icons/FacebookIcon";
 import InstagramIcon from "@/components/icons/InstagramIcon";
+import TikTokIcon from "@/components/icons/TikTokIcon";
 import WhatsAppIcon from "@/components/icons/WhatsAppIcon";
-import { FACEBOOK_URL, INSTAGRAM_URL, whatsappLink, DEFAULT_WHATSAPP_MESSAGE } from "@/lib/contact";
+import { FACEBOOK_URL, INSTAGRAM_URL, TIKTOK_URL, whatsappLink, DEFAULT_WHATSAPP_MESSAGE } from "@/lib/contact";
 
 export const metadata = { title: "Contacto — Asteria Store" };
 
@@ -106,7 +107,7 @@ export default function ContactoPage() {
           </span>
         </div>
 
-        <div className="mt-8 grid gap-5 sm:grid-cols-2 sm:gap-8">
+        <div className="mt-8 grid gap-5 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3 lg:gap-6">
           <a
             href={FACEBOOK_URL}
             target="_blank"
@@ -135,6 +136,21 @@ export default function ContactoPage() {
             </span>
             <span className="flex-1 font-script text-2xl font-medium text-brand-ink sm:text-3xl">
               Síguenos en Instagram
+            </span>
+            <ChevronRight size={18} className="shrink-0 text-[#2f97a3]" />
+          </a>
+
+          <a
+            href={TIKTOK_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="card flex items-center gap-4 px-5 py-4 sm:col-span-2 sm:px-6 lg:col-span-1"
+          >
+            <span className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-brand-accent-light text-[#3aa7b3]">
+              <TikTokIcon className="h-8 w-8" />
+            </span>
+            <span className="flex-1 font-script text-2xl font-medium text-brand-ink sm:text-3xl">
+              Síguenos en TikTok
             </span>
             <ChevronRight size={18} className="shrink-0 text-[#2f97a3]" />
           </a>

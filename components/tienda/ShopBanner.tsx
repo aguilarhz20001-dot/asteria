@@ -11,16 +11,29 @@ const SLIDES = [
 ];
 
 const AUTOPLAY_MS = 5000;
+// Proporción (ancho/alto) mientras cargan las imágenes. Luego se usa la real de tus imágenes.
+const DEFAULT_RATIO = 640 / 690;
+
+const median = (nums: number[]) => {
+  const a = [...nums].sort((x, y) => x - y);
+  return a[Math.floor(a.length / 2)];
+};
 
 /**
  * Banner de la tienda.
- * Celular y tablet: carrusel que se desliza solo (y con el dedo), con puntitos.
- * Escritorio (lg): las tres fotos juntas, sin carrusel.
+ * Las tres tarjetas tienen siempre el mismo tamaño y la proporción de tus imágenes
+ * (cuadradas o altas), así que se ven completas. El ancho nunca pasa del máximo de cada pantalla.
+ * Celular: carrusel que se desliza solo (y con el dedo), con puntitos.
+ * Tablet y escritorio: las tres tarjetas juntas y centradas.
  */
 export default function ShopBanner() {
   const ref = useRef<HTMLDivElement>(null);
   const paused = useRef(false);
   const [active, setActive] = useState(0);
+  const [loaded, setLoaded] = useState<(number | null)[]>(() => SLIDES.map(() => null));
+  // Las tres tarjetas usan SIEMPRE la misma proporción: la que tengan tus imágenes.
+  const known = loaded.filter((r): r is number => r !== null);
+  const ratio = known.length ? median(known) : DEFAULT_RATIO;
 
   useEffect(() => {
     const el = ref.current;
@@ -69,31 +82,37 @@ export default function ShopBanner() {
   };
 
   return (
-    <div className="relative" onPointerEnter={pause} onPointerLeave={resume} onTouchStart={pause} onTouchEnd={resume}>
+    <div onPointerEnter={pause} onPointerLeave={resume} onTouchStart={pause} onTouchEnd={resume}>
       <div
         ref={ref}
-        className="flex snap-x snap-mandatory gap-3 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:grid lg:grid-cols-3 lg:gap-5 lg:overflow-visible"
+        className="flex snap-x snap-mandatory gap-3 overflow-x-auto px-1 pb-3 pt-1 [scrollbar-width:none] sm:justify-center sm:gap-5 [&::-webkit-scrollbar]:hidden"
       >
         {SLIDES.map((s, i) => (
           <Link
             key={s.src}
             href="#productos"
             aria-label={`${s.alt}. Ver productos`}
-            className="relative block aspect-[9/16] w-[78%] shrink-0 snap-start overflow-hidden rounded-[1.75rem] shadow-lg shadow-brand-accent/25 ring-1 ring-brand-accent/20 sm:w-[calc(50%-0.375rem)] lg:w-auto"
+            style={{ aspectRatio: ratio, width: `min(var(--maxw), calc(var(--h) * ${ratio}))` }}
+            className="relative block shrink-0 snap-start overflow-hidden rounded-[1.25rem] shadow-lg shadow-brand-accent/25 ring-1 ring-brand-accent/20 [--h:24rem] [--maxw:76vw] sm:[--h:22rem] sm:[--maxw:calc((100vw_-_6.5rem)/3)] lg:[--h:24rem] lg:[--maxw:21rem] lg:rounded-[1.5rem]"
           >
             <Image
               src={s.src}
               alt={s.alt}
               fill
               priority={i === 0}
-              sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 78vw"
-              className="object-cover object-top"
+              sizes="(min-width: 1024px) 340px, (min-width: 640px) 33vw, 76vw"
+              className="object-cover"
+              onLoad={(e) => {
+                const { naturalWidth: w, naturalHeight: h } = e.currentTarget;
+                if (!w || !h) return;
+                setLoaded((prev) => prev.map((r, j) => (j === i ? w / h : r)));
+              }}
             />
           </Link>
         ))}
       </div>
 
-      <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center gap-2 lg:hidden">
+      <div className="flex justify-center gap-2 sm:hidden">
         {SLIDES.map((s, i) => (
           <button
             key={s.src}
@@ -101,11 +120,11 @@ export default function ShopBanner() {
             onClick={() => goTo(i)}
             aria-label={`Ir al banner ${i + 1}`}
             aria-current={i === active}
-            className="pointer-events-auto flex h-5 items-center"
+            className="flex h-5 items-center"
           >
             <span
-              className={`block h-2.5 rounded-full shadow-sm transition-all ${
-                i === active ? "w-6 bg-brand-accent-dark" : "w-2.5 bg-white/90 ring-1 ring-brand-accent/30"
+              className={`block h-2.5 rounded-full transition-all ${
+                i === active ? "w-6 bg-brand-accent-dark" : "w-2.5 bg-brand-accent/30"
               }`}
             />
           </button>

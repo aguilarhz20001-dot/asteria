@@ -42,9 +42,9 @@ function MobileHero() {
       />
 
       <h1 className="mt-3 text-center font-script font-bold leading-none">
-        <span className="block text-[clamp(1.4rem,7vw,2rem)] text-brand-ink">Tu tienda en</span>
-        <span className="block whitespace-nowrap text-[clamp(2.1rem,10.6vw,3.4rem)] text-brand-accent-dark">
-          Chimaltenango
+        <span className="block text-[clamp(1.4rem,7vw,2rem)] text-brand-ink">Tu tienda</span>
+        <span className="block whitespace-nowrap text-[clamp(2.6rem,14vw,4.2rem)] text-brand-accent-dark">
+          online
         </span>
       </h1>
 
@@ -110,8 +110,8 @@ export default function HomeHero() {
 
               <Reveal delay={0.1} className="w-full mt-6">
                 <h1 className="font-script font-bold leading-tight">
-                  <span className="block text-5xl text-brand-ink">Tu tienda en</span>
-                  <span className="block text-7xl text-brand-accent-dark">Chimaltenango</span>
+                  <span className="block text-5xl text-brand-ink">Tu tienda</span>
+                  <span className="block text-8xl text-brand-accent-dark">online</span>
                 </h1>
                 <p className="mx-auto mt-4 max-w-md text-lg text-brand-ink/75">
                   Ropa, accesorios, calzado, belleza y muchas cositas más.
