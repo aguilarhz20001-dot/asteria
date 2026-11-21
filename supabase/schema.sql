@@ -26,7 +26,7 @@ as $$
 $$;
 
 -- ⚠️ CAMBIA ESTE CORREO por el tuyo (el mismo con el que crearás tu usuario):
-insert into public.admin_emails (email) values ('tu-correo@ejemplo.com')
+insert into public.admin_emails (email) values ('aguilarhz20001@gmail.com')
 on conflict do nothing;
 
 -- 2) TABLAS ------------------------------------------------------------
