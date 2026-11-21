@@ -1,0 +1,74 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import type { Metadata } from "next";
+import { ArrowLeft, Truck } from "lucide-react";
+import ProductGallery from "@/components/ProductGallery";
+import ProductBuy from "@/components/ProductBuy";
+import ProductCard from "@/components/ProductCard";
+import { ProductViewProvider } from "@/components/ProductViewContext";
+import { getProduct, getProducts } from "@/lib/products";
+import { formatQ } from "@/lib/format";
+
+type Params = Promise<{ slug: string }>;
+
+export const revalidate = 60;
+
+export async function generateStaticParams() {
+  const products = await getProducts();
+  return products.map((p) => ({ slug: p.slug }));
+}
+
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProduct(slug);
+  return { title: product ? `${product.name} — Asteria Store` : "Producto — Asteria Store" };
+}
+
+export default async function ProductoPage({ params }: { params: Params }) {
+  const { slug } = await params;
+  const product = await getProduct(slug);
+  if (!product) notFound();
+
+  const all = await getProducts();
+  const related = all.filter((p) => p.category === product.category && p.slug !== product.slug).slice(0, 4);
+
+  return (
+    <section className="max-w-6xl mx-auto px-4 sm:px-8 py-5 sm:py-10">
+      <Link href="/tienda" className="inline-flex items-center gap-1 text-sm text-brand-accent-dark hover:underline">
+        <ArrowLeft size={16} /> Volver a la tienda
+      </Link>
+
+      <ProductViewProvider initialId={product.variants?.find((v) => v.inStock)?.id}>
+      <div className="mt-3 grid grid-cols-1 gap-5 sm:mt-6 md:grid-cols-2 md:gap-10">
+        <ProductGallery product={product} />
+
+        <div className="min-w-0">
+          <span className="text-sm font-medium text-brand-lilac-dark">{product.categoryLabel}</span>
+          <h1 className="mt-0.5 text-2xl sm:text-4xl font-bold text-brand-ink">{product.name}</h1>
+          <p className="mt-1 text-2xl sm:mt-3 sm:text-3xl font-bold text-brand-accent-dark">{formatQ(product.price)}</p>
+          <p className="mt-3 text-sm sm:mt-4 sm:text-base text-brand-ink/70 leading-relaxed">{product.description}</p>
+
+          <ProductBuy product={product} />
+
+          <p className="mt-6 flex items-center gap-2 text-sm text-brand-ink/60">
+            <Truck size={16} className="text-brand-accent-dark" />
+            Entregas en Chimaltenango y envíos a todo el país.{" "}
+            <Link href="/envios" className="text-brand-accent-dark underline">Ver detalles</Link>
+          </p>
+        </div>
+      </div>
+      </ProductViewProvider>
+
+      {related.length > 0 && (
+        <div className="mt-10 sm:mt-16">
+          <h2 className="font-script text-4xl text-brand-ink">También te puede gustar</h2>
+          <div className="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+            {related.map((p) => (
+              <ProductCard key={p.slug} product={p} />
+            ))}
+          </div>
+        </div>
+      )}
+    </section>
+  );
+}

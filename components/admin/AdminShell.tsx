@@ -1,0 +1,153 @@
+"use client";
+
+import type { ReactNode } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  Package,
+  Warehouse,
+  PackagePlus,
+  TrendingUp,
+  Tags,
+  ClipboardCheck,
+  Receipt,
+  Wallet,
+  ShoppingCart,
+  ExternalLink,
+  LogOut,
+} from "lucide-react";
+import { signOutAction } from "@/app/admin/actions";
+
+const NAV_GROUPS = [
+  { title: null, items: [{ href: "/admin", label: "Resumen", icon: LayoutDashboard }] },
+  {
+    title: "Tienda",
+    items: [
+      { href: "/admin/productos", label: "Productos", icon: Package },
+      { href: "/admin/categorias", label: "Categorías", icon: Tags },
+      { href: "/admin/pedidos", label: "Pedidos", icon: ShoppingCart },
+    ],
+  },
+  {
+    title: "Inventario",
+    items: [
+      { href: "/admin/bodega", label: "Bodega", icon: Warehouse },
+      { href: "/admin/compras", label: "Compras", icon: PackagePlus },
+    ],
+  },
+  {
+    title: "Dinero",
+    items: [
+      { href: "/admin/ventas", label: "Ventas", icon: TrendingUp },
+      { href: "/admin/gastos", label: "Gastos", icon: Receipt },
+      { href: "/admin/caja", label: "Caja", icon: Wallet },
+      { href: "/admin/cuadre", label: "Cuadre", icon: ClipboardCheck },
+    ],
+  },
+];
+
+const NAV = NAV_GROUPS.flatMap((g) => g.items);
+
+export default function AdminShell({
+  email,
+  pendingOrders = 0,
+  children,
+}: {
+  email: string;
+  /** Pedidos esperando que los marques como vendidos */
+  pendingOrders?: number;
+  children: ReactNode;
+}) {
+  const pathname = usePathname();
+  const isActive = (href: string) => (href === "/admin" ? pathname === "/admin" : pathname.startsWith(href));
+
+  return (
+    <div className="min-h-screen md:grid md:grid-cols-[15rem_1fr]">
+      {/* Menú lateral (escritorio) */}
+      <aside className="hidden md:flex flex-col border-r border-brand-accent/20 bg-white/80 backdrop-blur px-4 py-6 sticky top-0 h-screen">
+        <Link href="/admin" className="flex items-center gap-3 px-2" aria-label="Panel Asteria Store">
+          <Image src="/logo.png" alt="" width={48} height={48} style={{ width: 48, height: "auto" }} />
+          <span>
+            <span className="block font-script text-2xl leading-none text-brand-ink">Asteria Store</span>
+            <span className="text-xs text-brand-ink/50">Panel administrativo</span>
+          </span>
+        </Link>
+
+        <nav className="mt-6 flex flex-col gap-1 overflow-y-auto">
+          {NAV_GROUPS.map((group, i) => (
+            <div key={group.title ?? "inicio"} className={i === 0 ? "" : "mt-4"}>
+              {group.title && <p className="mb-1 px-3 text-xs font-semibold uppercase tracking-wide text-brand-ink/40">{group.title}</p>}
+              {group.items.map(({ href, label, icon: Icon }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  aria-current={isActive(href) ? "page" : undefined}
+                  className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors ${
+                    isActive(href)
+                      ? "bg-gradient-to-r from-brand-accent to-brand-lilac text-white shadow-sm"
+                      : "text-brand-ink/75 hover:bg-brand-accent-light"
+                  }`}
+                >
+                  <Icon size={18} />
+                  {label}
+                  {href === "/admin/pedidos" && pendingOrders > 0 && (
+                    <span className="ml-auto rounded-full bg-white px-2 py-0.5 text-xs font-bold text-brand-accent-dark ring-1 ring-brand-accent/40">
+                      {pendingOrders}
+                    </span>
+                  )}
+                </Link>
+              ))}
+            </div>
+          ))}
+        </nav>
+
+        <div className="mt-auto space-y-1 border-t border-brand-accent/15 pt-4">
+          <Link href="/" target="_blank" className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm text-brand-ink/70 hover:bg-brand-accent-light">
+            <ExternalLink size={16} /> Ver la tienda
+          </Link>
+          <form action={signOutAction}>
+            <button type="submit" className="flex w-full items-center gap-3 rounded-xl px-3 py-2 text-sm text-brand-ink/70 hover:bg-brand-accent-light">
+              <LogOut size={16} /> Cerrar sesión
+            </button>
+          </form>
+          <p className="truncate px-3 pt-2 text-xs text-brand-ink/40" title={email}>{email}</p>
+        </div>
+      </aside>
+
+      <div className="min-w-0">
+        {/* Barra superior (celular) */}
+        <header className="md:hidden sticky top-0 z-30 border-b border-brand-accent/20 bg-white/90 backdrop-blur">
+          <div className="flex items-center justify-between px-4 py-2">
+            <span className="font-script text-2xl text-brand-ink">Asteria Store · Panel</span>
+            <form action={signOutAction}>
+              <button type="submit" aria-label="Cerrar sesión" className="rounded-full p-2 text-brand-ink/70 hover:bg-brand-accent-light">
+                <LogOut size={18} />
+              </button>
+            </form>
+          </div>
+          <nav className="flex gap-1 overflow-x-auto px-3 pb-2">
+            {NAV.map(({ href, label, icon: Icon }) => (
+              <Link
+                key={href}
+                href={href}
+                className={`flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-sm font-medium ${
+                  isActive(href) ? "bg-brand-accent-dark text-white" : "bg-brand-accent-light text-brand-ink/75"
+                }`}
+              >
+                <Icon size={15} />
+                {label}
+                {href === "/admin/pedidos" && pendingOrders > 0 && (
+                  <span className="rounded-full bg-white px-1.5 text-xs font-bold text-brand-accent-dark">{pendingOrders}</span>
+                )}
+              </Link>
+            ))}
+          </nav>
+        </header>
+
+        <div className="mx-auto max-w-6xl px-4 py-6 sm:px-8 sm:py-10">{children}</div>
+      </div>
+    </div>
+  );
+}
